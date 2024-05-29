@@ -1,7 +1,9 @@
+const comments = require("../db/data/test-data/comments");
 const {
   getArticleById,
   fetchAllArticles,
   fetchCommentsByArticleId,
+  addCommentByArticleId,
 } = require("../models/articleModel");
 
 exports.getArticleById = (req, res, next) => {
@@ -37,6 +39,28 @@ exports.getCommentsByArticleId = (req, res, next) => {
   fetchCommentsByArticleId(article_id)
     .then((comments) => {
       res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
+exports.postCommentByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+
+  if (!Number.isInteger(Number(article_id))) {
+    return res
+      .status(400)
+      .send({ msg: "Bad Request - Article ID was invalid." });
+  }
+  if (!username || !body) {
+    return res
+      .status(400)
+      .send({ msg: "Bad Request - Missing required fields." });
+  }
+
+  addCommentByArticleId(article_id, username, body)
+    .then((comment) => {
+      res.status(201).send({ comment });
     })
     .catch(next);
 };
