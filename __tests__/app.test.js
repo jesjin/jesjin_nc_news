@@ -83,6 +83,32 @@ describe('GET /api/articles/:article_id', () => {
         .then(({ body }) => {
             expect(body.msg).toBe('Article not found');
         });
-    })
+    });
 });
 
+describe('GEt /api/articles', () => {
+    test('200: responds with an array of article objects', () => { 
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then (({ body }) => {
+            expect(body.articles).toBeInstanceOf(Array);
+            expect(body.articles.length).toBeGreaterThan(0);
+            const expectedArticleShape = {
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String),
+            };
+            body.articles.forEach((article) => {
+                expect(article).toMatchObject(expectedArticleShape);
+            });
+            expect(body.articles).toBeSortedBy('created_at', { descending: true});
+        });
+    })
+})

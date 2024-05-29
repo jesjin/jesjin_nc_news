@@ -1,10 +1,11 @@
 const express = require('express');
 const { getTopics } = require('./controllers/topicController');
 const { getApiEndPoints } = require('./controllers/apiController');
-const { getArticleById } = require('./controllers/articleController');
+const { getArticleById, getAllArticles } = require('./controllers/articleController');
 
 const app = express();
 
+app.get('/api/articles', getAllArticles); // Fix the route path here
 app.get('/api/articles/:article_id', getArticleById);
 app.get('/api/topics', getTopics);
 app.get('/api', getApiEndPoints);

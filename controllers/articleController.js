@@ -1,4 +1,4 @@
-const { getArticleById } = require('../models/articleModel');
+const { getArticleById, fetchAllArticles } = require('../models/articleModel');
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -6,10 +6,17 @@ exports.getArticleById = (req, res, next) => {
   if (!Number.isInteger(Number(article_id))) {
     return res.status(400).send({ msg: 'Bad Request - Article ID was invalid.' });
   }
-
   getArticleById(article_id)
     .then((article) => {
       res.status(200).send({ article });
+    })
+    .catch(next);
+};
+
+exports.getAllArticles = (req, res, next) => {
+  fetchAllArticles()
+    .then((articles) => {
+      res.status(200).send({ articles });
     })
     .catch(next);
 };
