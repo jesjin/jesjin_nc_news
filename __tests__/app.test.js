@@ -12,17 +12,37 @@ describe('GET /api/topics', () => {
     return request(app)
       .get('/api/topics')
       .expect(200)
-      .then((response) => {
-        expect(response.body.topics).toBeInstanceOf(Array);
-        expect(response.body.topics.length).toBeGreaterThan(0);
-        response.body.topics.forEach((topic) => {
-          expect(topic).toEqual(
-            expect.objectContaining({
-              slug: expect.any(String),
-              description: expect.any(String),
-            })
-          );
+      .expect("Content-Type", /json/)
+      .then(({ body }) => {
+        expect(body.topics).toBeInstanceOf(Array);
+        expect(body.topics.length).toBeGreaterThan(0);
+        const expectedTopicShape = {
+            description: expect.any(String),
+            slug: expect.any(String),
+        };
+        body.topics.forEach((topic) => {
+            expect(topic).toMatchObject(expectedTopicShape);
         });
       });
   });
 });
+
+describe('GET /api', () => {
+    test('200: responds with JSON object describing all available endpoints', () => {
+        return request(app)
+            .get('/api')
+            .expect(200)
+            .expect("Content-Type", /json/)
+            .then(({ body }) => {
+                const expectedShape = {
+                    description: expect.any(String),
+                    queries: expect.any(Array),
+                    exampleResponse: expect.any(Object),
+                };
+                const arr = Object.values(body);
+                arr.forEach((item) => {
+                    expect(item).toMatchObject(expectedShape);
+                })
+            })
+    })
+})
