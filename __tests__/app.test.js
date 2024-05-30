@@ -244,11 +244,11 @@ describe('PATCH /api/articles/:article_id', () => {
   });
 });
 
-describe.only('DELETE /api/comments/:comment_id', () => {
+describe('DELETE /api/comments/:comment_id', () => {
   test('204: successfully delete a comment by comment_id', () => {
     return request(app)
       .delete('/api/comments/1')
-      .expect(204);
+      .expect(204)
   });
   test('404: responds with "Comment not found" for non-existent comment_id', () => {
     return request(app)
@@ -264,6 +264,26 @@ describe.only('DELETE /api/comments/:comment_id', () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Bad Request');
+      });
+  });
+});
+
+describe.only('GET /api/users', () => {
+  test('200: responds with an array of users objects', () => {
+    return request(app)
+      .get('/api/users')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(({ body }) => {
+        expect(body.users).toBeInstanceOf(Array);
+        expect(body.users.length).toBeGreaterThan(0);
+          body.users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            });
+          });
       });
   });
 });
