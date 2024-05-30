@@ -1,9 +1,9 @@
 const request = require("supertest");
 const app = require("../app");
+const endpoints = require('../endpoints.json')
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
-// const { toBeSortedBy } = require('jest-sorted');
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -30,21 +30,27 @@ describe("GET /api/topics", () => {
 
 describe("GET /api", () => {
   test("200: responds with JSON object describing all available endpoints", () => {
+    // return request(app)
+    //   .get("/api")
+    //   .expect(200)
+    //   .expect("Content-Type", /json/)
+    //   .then(({ body }) => {
+    //     const expectedShape = {
+    //       description: expect.any(String),
+    //       queries: expect.any(Array),
+    //       exampleResponse: expect.any(Object),
+    //     };
+    //     const arr = Object.values(body);
+    //     arr.forEach((item) => {
+    //       expect(item).toMatchObject(expectedShape);
+    //     });
+    //   });
     return request(app)
-      .get("/api")
+      .get('/api')
       .expect(200)
-      .expect("Content-Type", /json/)
-      .then(({ body }) => {
-        const expectedShape = {
-          description: expect.any(String),
-          queries: expect.any(Array),
-          exampleResponse: expect.any(Object),
-        };
-        const arr = Object.values(body);
-        arr.forEach((item) => {
-          expect(item).toMatchObject(expectedShape);
-        });
-      });
+      .then((item) => {
+        expect(item.body).toEqual(endpoints);
+      })
   });
 });
 
@@ -87,7 +93,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe("GEt /api/articles", () => {
+describe("GET /api/articles", () => {
   test("200: responds with an array of article objects", () => {
     return request(app)
       .get("/api/articles")
@@ -197,4 +203,44 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad Request - Missing required fields.");
       });
   });
+});
+
+describe('PATCH /api/articles/:article_id', () => {
+  test('200: responds with the updated article', () => {
+    const update = { inc_votes: 1 };
+    return request(app)
+      .patch('/api/articles/1')
+      .send(update)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          article_id: 1,
+          votes: expect.any(Number),
+        });
+      });
+  });
+  test('400: responds with "Bad Request - inc_votes must be a number" when inc_votes is not a number', () => {
+    const update = { inc_votes: 'invalid' };
+    return request(app)
+      .patch('/api/articles/1')
+      .send(update)
+      .expect(400)
+      .expect('Content-Type', /json/)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request - inc_votes must be a number.');
+      });
+  });
+  test('404: responds with an error when article id does not exist)', () => {
+    const update = { inc_votes: 1 };
+    return request(app)
+      .patch('/api/articles/99999')
+      .send(update)
+      .expect(404)
+      .expect('Content-Type', /json/)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Article not found');
+      });
+  });
+
 });
