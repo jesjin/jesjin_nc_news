@@ -1,12 +1,19 @@
 const express = require('express');
 const { getTopics } = require('./controllers/topicController');
 const { getApiEndPoints } = require('./controllers/apiController');
-const { getArticleById, getAllArticles, getCommentsByArticleId, postCommentByArticleId } = require('./controllers/articleController');
+const { 
+  getArticleById, 
+  getAllArticles, 
+  getCommentsByArticleId, 
+  postCommentByArticleId, 
+  patchArticleVotes 
+} = require('./controllers/articleController');
 
 const app = express();
 
 app.use(express.json());
 
+app.patch('/api/articles/:article_id', patchArticleVotes);
 app.post('/api/articles/:article_id/comments', postCommentByArticleId);
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 app.get('/api/articles', getAllArticles);
