@@ -118,6 +118,48 @@ describe("GET /api/articles", () => {
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("200: responds with an array of articles filtered by topic", () => {
+    return request(app)
+      .get('/api/articles?topic=cooking')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(({ body }) => {
+        body.articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: 'cooking',
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+          })
+        );
+      });
+    })
+  });
+  test("200: responds with an empty array when topic has no articles", () => {
+    return request(app)
+      .get('/api/articles?topic=nonexistent_topic')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(({ body }) => {
+        expect(body.articles).toBeInstanceOf(Array);
+        expect(body.articles.length).toBe(0);
+      });
+  });
+  test("200: responds with all articles when no topic query is provided", () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(({ body }) => {
+        expect(body.articles).toBeInstanceOf(Array);
+        expect(body.articles.length).toBeGreaterThan(0);
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -268,7 +310,7 @@ describe('DELETE /api/comments/:comment_id', () => {
   });
 });
 
-describe.only('GET /api/users', () => {
+describe('GET /api/users', () => {
   test('200: responds with an array of users objects', () => {
     return request(app)
       .get('/api/users')
