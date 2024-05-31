@@ -6,7 +6,7 @@ It provides endpoints to create, read, update, and delete articles and comments,
 with user authentication and topic management.
 
 ## Hosted Version
-Check out the live version of the API [here](my-hosted-version-link).
+Check out the live version of the API https://jesjin-nc-news.onrender.com.
 
 ## Project Summary
 This project serves as the backend for an articles management system. 
