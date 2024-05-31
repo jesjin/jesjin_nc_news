@@ -8,12 +8,12 @@ const testData = require("../db/data/test-data");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe('GET /api/topics', () => {
-  test('200: responds with an array of topic objects', () => {
+describe("GET /api/topics", () => {
+  test("200: responds with an array of topic objects", () => {
     return request(app)
-      .get('/api/topics')
+      .get("/api/topics")
       .expect(200)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
         expect(body.topics).toBeInstanceOf(Array);
         expect(body.topics.length).toBeGreaterThan(0);
@@ -28,8 +28,8 @@ describe('GET /api/topics', () => {
   });
 });
 
-describe('GET /api', () => {
-  test('200: responds with JSON object describing all available endpoints', () => {
+describe("GET /api", () => {
+  test("200: responds with JSON object describing all available endpoints", () => {
     // return request(app)
     //   .get("/api")
     //   .expect(200)
@@ -54,12 +54,12 @@ describe('GET /api', () => {
   });
 });
 
-describe('GET /api/articles/:article_id', () => {
-  test('200: responds with an article object including comment_count', () => {
+describe("GET /api/articles/:article_id", () => {
+  test("200: responds with an article object", () => {
     return request(app)
-      .get('/api/articles/1')
+      .get("/api/articles/1")
       .expect(200)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
         const expectedShape = {
           author: expect.any(String),
@@ -70,36 +70,35 @@ describe('GET /api/articles/:article_id', () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
-          comment_count: expect.any(String),
         };
       });
   });
   test('400: responds with "Bad Request" for invalid article ID', () => {
     return request(app)
-      .get('/api/articles/${invalidArticleID}')
+      .get("/api/articles/${invalidArticleID}")
       .expect(400)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad Request - Article ID was invalid.');
+        expect(body.msg).toBe("Bad Request - Article ID was invalid.");
       });
   });
   test('404: responds with "Article not found" for non-existent article ID', () => {
     return request(app)
-      .get('/api/articles/999')
+      .get("/api/articles/999")
       .expect(404)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
-        expect(body.msg).toBe('Article not found');
+        expect(body.msg).toBe("Article not found");
       });
   });
 });
 
-describe('GET /api/articles', () => {
-  test('200: responds with an array of article objects', () => {
+describe("GET /api/articles", () => {
+  test("200: responds with an array of article objects", () => {
     return request(app)
-      .get('/api/articles')
+      .get("/api/articles")
       .expect(200)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
         expect(body.articles).toBeInstanceOf(Array);
         expect(body.articles.length).toBeGreaterThan(0);
@@ -116,10 +115,10 @@ describe('GET /api/articles', () => {
         body.articles.forEach((article) => {
           expect(article).toMatchObject(expectedArticleShape);
         });
-        expect(body.articles).toBeSortedBy('created_at', { descending: true });
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test('200: responds with an array of articles filtered by topic', () => {
+  test("200: responds with an array of articles filtered by topic", () => {
     return request(app)
       .get('/api/articles?topic=cooking')
       .expect(200)
@@ -141,7 +140,7 @@ describe('GET /api/articles', () => {
       });
     })
   });
-  test('200: responds with an empty array when topic has no articles', () => {
+  test("200: responds with an empty array when topic has no articles", () => {
     return request(app)
       .get('/api/articles?topic=nonexistent_topic')
       .expect(200)
@@ -151,7 +150,7 @@ describe('GET /api/articles', () => {
         expect(body.articles.length).toBe(0);
       });
   });
-  test('200: responds with all articles when no topic query is provided', () => {
+  test("200: responds with all articles when no topic query is provided", () => {
     return request(app)
       .get('/api/articles')
       .expect(200)
@@ -163,12 +162,12 @@ describe('GET /api/articles', () => {
   });
 });
 
-describe('GET /api/articles/:article_id/comments', () => {
-  test('200: responds with an array of comments for the given article_id', () => {
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: responds with an array of comments for the given article_id", () => {
     return request(app)
-      .get('/api/articles/1/comments')
+      .get("/api/articles/1/comments")
       .expect(200)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
         expect(body.comments).toBeInstanceOf(Array);
         expect(body.comments.length).toBeGreaterThan(0);
@@ -182,31 +181,31 @@ describe('GET /api/articles/:article_id/comments', () => {
             created_at: expect.any(String),
           });
         });
-        expect(body.comments).toBeSortedBy('created_at', { descending: true });
+        expect(body.comments).toBeSortedBy("created_at", { descending: true });
       });
   });
   test('400: responds with "Bad Request" for invalid article id', () => {
     return request(app)
-      .get('/api/articles/invalidID/comments')
+      .get("/api/articles/invalidID/comments")
       .expect(400)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad Request - Article ID was invalid.');
+        expect(body.msg).toBe("Bad Request - Article ID was invalid.");
       });
   });
 });
 
-describe('POST /api/articles/:article_id/comments', () => {
-  test('201: responds with the posted comment', () => {
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: responds with the posted comment", () => {
     const newComment = {
       username: "lurker",
       body: "This is a test comment.",
     };
     return request(app)
-      .post('/api/articles/1/comments')
+      .post("/api/articles/1/comments")
       .send(newComment)
       .expect(201)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
         expect(body.comment).toMatchObject({
           article_id: 1,
@@ -225,12 +224,12 @@ describe('POST /api/articles/:article_id/comments', () => {
       body: "This is a test comment.",
     };
     return request(app)
-      .post('/api/articles/invalidID/comments')
+      .post("/api/articles/invalidID/comments")
       .send(newComment)
       .expect(400)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad Request - Article ID was invalid.');
+        expect(body.msg).toBe("Bad Request - Article ID was invalid.");
       });
   });
   test('400: responds with "Bad Request - Missing required fields" when username or body is missing', () => {
@@ -238,12 +237,12 @@ describe('POST /api/articles/:article_id/comments', () => {
       username: "tickle122",
     };
     return request(app)
-      .post('/api/articles/1/comments')
+      .post("/api/articles/1/comments")
       .send(invalidComment)
       .expect(400)
-      .expect('Content-Type', /json/)
+      .expect("Content-Type", /json/)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad Request - Missing required fields.');
+        expect(body.msg).toBe("Bad Request - Missing required fields.");
       });
   });
 });
