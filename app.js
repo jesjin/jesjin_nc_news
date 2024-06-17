@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const { getTopics } = require('./controllers/topicController');
 const { getApiEndPoints } = require('./controllers/apiController');
 const { 
@@ -14,6 +15,7 @@ const { getAllUsers } = require('./controllers/userController');
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.get('/api/users', getAllUsers);
 app.delete('/api/comments/:comment_id', deleteCommentById);
